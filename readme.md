@@ -32,7 +32,7 @@ A stateless microservice developed in Node.js with TypeScript for managing produ
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/product-management-microservice.git
+   git clone [https://github.com/yourusername/product-management-microservice.git](https://github.com/syed-maaz/pms-trbo.git)
    cd product-management-microservice
 Install dependencies:
 

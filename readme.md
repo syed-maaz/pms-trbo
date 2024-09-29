@@ -1,6 +1,7 @@
+
 # Product Management Microservice (trbo-pms)
 
-This is a **Product Management Microservice** built using **Node.js** and **TypeScript**. The microservice is responsible for handling product-related operations such as listing, importing from CSV, selling products, managing stock, and recommending related products based on sales data. JWT-based authentication is used to secure API endpoints, and tests are written using **Jest**  to ensure proper functionality.
+This is a **Product Management Microservice** built using **Node.js** and **TypeScript**. The microservice is responsible for handling product-related operations such as listing, importing from CSV, selling products, managing stock, and recommending related products based on sales data. JWT-based authentication is used to secure API endpoints, and tests are written using **Jest** and **Supertest** to ensure proper functionality.
 
 ## Features
 
@@ -25,143 +26,137 @@ This is a **Product Management Microservice** built using **Node.js** and **Type
 - **Pino**: Fast logger for tracking application logs.
 - **dotenv**: Loads environment variables from `.env` file.
 
+---
+
+## Architecture Decisions
+
+### Domain-Driven Design (DDD)
+The **Domain-Driven Design (DDD)** approach is central to the design of this microservice. We have structured the project around core business domains, which ensures that we focus on the core behavior and rules of the application instead of merely the technical implementation.
+
+#### Why DDD?
+
+1. **Business Logic-Centric**: DDD allows the development team to structure the application based on the business logic rather than technical concerns, which is important in a product management system where business rules (e.g., stock management, product relationships) are vital.
+   
+2. **Separation of Concerns**: By dividing the application into distinct domains and layers (services, repositories, controllers), the code is more modular, scalable, and easier to maintain.
+
+3. **Adaptable to Changes**: In an evolving domain such as product management, DDD allows us to easily adapt to changing business requirements without disrupting the entire codebase. Changes in business rules or domain objects only affect the corresponding domain services.
+
+#### Best Practices Followed
+
+- **Layered Architecture**: The project follows a layered architecture where each layer is responsible for a specific concern:
+  - **Controller Layer**: Responsible for handling HTTP requests and responses.
+  - **Service Layer**: Contains business logic and rules.
+  - **Repository Layer**: Handles interactions with the database.
+
+- **Single Responsibility Principle**: Each service or class is focused on a single responsibility, which makes testing and maintaining code much easier.
+
+- **Test-Driven Development (TDD)**: Comprehensive unit and integration tests ensure that each piece of functionality is verified, improving code quality and reducing bugs.
+
+- **Clear Boundaries**: The boundaries between domains and services are clear, ensuring that each part of the application is independent and reusable.
+
+---
+
+## Database Decisions
+
+The current implementation uses **SQLite** for development purposes due to its simplicity and zero-configuration setup. However, for production environments, **PostgreSQL** would be a more robust choice. 
+
+### Why Use PostgreSQL?
+
+1. **Scalability**: PostgreSQL offers better scalability and is more suited for a production environment that handles large datasets and complex queries.
+
+2. **ACID Compliance**: PostgreSQL ensures **Atomicity, Consistency, Isolation, and Durability (ACID)**, which is critical for financial operations, such as handling stock reductions and sales transactions.
+
+3. **Advanced Features**: PostgreSQL offers powerful features such as indexing, transactions, and support for complex queries that will be beneficial as the product grows.
+
+4. **Data Integrity**: PostgreSQL supports advanced data integrity features like foreign key constraints, making it easier to enforce data relationships such as between products and their stock levels.
+
+To switch to PostgreSQL, you could update the `DB_FILENAME` in the `.env` file to point to a PostgreSQL database connection string and update the ORM configuration accordingly.
+
+---
+
+## What Can Be Done More in the Application
+
+### Enhancements and Future Improvements
+
+1. **API Pagination**: Currently, the product listing API returns all products in a single response. Implementing pagination would improve performance, especially when dealing with a large number of products.
+
+2. **Caching Layer**: Implementing a caching layer (e.g., Redis) for frequently accessed data such as product listings or recommendations would enhance performance by reducing database queries.
+
+3. **CI/CD Integration**: Automated deployment pipelines using GitHub Actions or similar tools can be integrated to automate the deployment and testing process on staging/production environments.
+
+4. **GraphQL Support**: Introducing GraphQL for flexible querying of product data could allow for more powerful and efficient client-side requests.
+
+5. **Webhook Support for Orders**: The microservice could support webhooks that notify other services (e.g., order service) when a product stock changes or when products are sold together, allowing seamless communication in a microservices architecture.
+
+---
+
+## Code Review
+
+1. **Clear Separation of Concerns**: The application architecture follows DDD principles and layered architecture, making the code modular and easy to maintain.
+
+2. **Comprehensive Test Suite**: The project contains well-defined unit and integration tests with good coverage. Tests ensure that all critical functionality is verified.
+
+3. **Security Considerations**: JWT authentication is used to protect sensitive routes (e.g., product import and sales). The role-based access (admin and user) ensures that different parts of the application are only accessible by authorized users.
+
+4. **Extensible Codebase**: The code is structured in a way that future features can be easily added. For instance, more business rules can be added in the service layer without affecting the controllers or repositories.
+
+5. **Solid Error Handling**: Thoughtful error handling is applied throughout the application to ensure graceful degradation and meaningful error messages for the user, preventing unhandled exceptions from crashing the app.
+
+6. **Well-Organized Folder Structure**: The folder structure is intuitive and follows best practices, with clear separation between routes, controllers, services, and repositories.
+
+---
+
 ## Installation and Setup
 
 1. Clone the repository:
-bash
+   ```bash
    git clone https://github.com/your-username/trbo-pms.git
    cd trbo-pms
-   
+   ```
+
 2. Install dependencies:
-bash
+   ```bash
    npm install
-   
+   ```
+
 3. Create an `.env` file in the project root and configure the following environment variables:
-env
+   ```env
    NODE_ENV=development
    JWT_SECRET=yourSecretKey
    PORT=3000
    DB_FILENAME=trbo_pms.db
-   
+   ```
+
 4. Run the project in development mode:
-bash
+   ```bash
    npm run start:dev
-   
+   ```
+
 5. To build the project for production:
-bash
+   ```bash
    npm run build
-   
+   ```
+
 6. Start the production server:
-bash
+   ```bash
    npm run start:prod
-   
-## API Endpoints
+   ```
 
-### **Product Routes**
+---
 
-- **GET /v1/products**: Retrieve a list of products with optional filters and sorting.
-  - **Filters**: `price`, `sku`, `stock`, `title`.
-  - **Sorting**: `price`, `sku`, `last_updated` (supports `ASC` and `DESC`).
-
-- **POST /v1/products/import**: Import products via CSV file upload (Admin only).
-  - Requires Bearer Token for Admin authentication.
-  - Upload the CSV file with a valid format.
-
-- **POST /v1/products/sell**: Sell products and reduce stock. Tracks relationships between sold SKUs.
-  - Requires Bearer Token for User authentication.
-
-- **GET /v1/products/recommend/:sku**: Recommend products based on a provided SKU.
-
-### **Sample Request for Listing Products**:
-bash
-GET /v1/products?price=9.99&sortBy=price&order=ASC
-### **CSV Import Example**:
-bash
-POST /v1/products/import
-Authorization: Bearer <admin-token>
-Content-Type: multipart/form-data
-File: products.csv
 ## Testing
 
-Tests include both unit and integration tests, covering routes, services, and database interactions.
-
 1. Run the test suite:
-bash
+   ```bash
    npm run test
-   
+   ```
+
 2. Check code coverage:
-bash
+   ```bash
    npm run test -- --coverage
-   
-## Example Test Cases
+   ```
 
-### **product.routes.spec.ts**
-
-- **Import Products**: Test for uploading products from CSV.
-- **List Products**: Test with various filters (price, SKU, stock level, title).
-- **Sell Products**: Test product selling and stock reduction.
-- **Recommend Products**: Test recommendations based on SKU.
-- **Error Handling**: Handles cases like missing file uploads, invalid tokens, or incorrect sorting values.
-
-### **product.services.spec.ts**
-
-- **Product Listing**: Tests service layer for listing products with filters and sorting.
-- **Product Recommendations**: Tests product recommendations based on SKU.
-- **Unit Tests**: Mocks the repository layer using `ts-mockito` for isolation.
-
-## Folder Structure
-
-├── src
-│   ├── app.ts                   # Application entry point
-│   ├── controllers               # Controllers for handling HTTP requests
-│   ├── services                  # Business logic layer
-│   ├── repositories              # Database access layer
-│   ├── routes                    # Route definitions
-│   └── middlewares               # Middlewares for auth, error handling, etc.
-├── tests
-│   ├── integration               # Integration tests
-│   ├── unit                      # Unit tests
-│   ├── helpers                   # Helpers for test cases (e.g., JWT)
-│   └── mocks                     # Mock files for testing (e.g., CSV files)
-├── .env                          # Environment variables
-├── jest.config.js                # Jest configuration
-├── tsconfig.json                 # TypeScript configuration
-├── package.json                  # Dependencies and scripts
-└── README.md                     # Project documentation
-## Development
-
-### Running in Development Mode
-bash
-npm run start:dev
-This uses `nodemon` to watch for file changes and automatically restart the server.
-
-### Linting
-bash
-npm run lint
-Runs **ESLint** to check for code quality and consistency.
-
-## Environment Variables
-
-- `NODE_ENV`: The environment mode (development, production, test).
-- `JWT_SECRET`: Secret key for JWT token signing.
-- `PORT`: The port number for the server.
-- `DB_FILENAME`: The filename for the SQLite database (or connection string for PostgreSQL).
-
-## Logging
-
-- Uses **Pino** for fast, lightweight logging.
-- Logs are output to the console during development and production.
-
-## Database
-
-- Uses **SQLite** in development mode for quick, file-based storage.
-- Can be switched to **PostgreSQL** for production by adjusting the database connection string.
-
-## JWT Authentication
-
-- **Admin Token**: Required for importing products.
-- **User Token**: Required for listing, filtering, and selling products.
-- Tokens are generated dynamically during tests using **jsonwebtoken**.
+---
 
 ## Contribution
 
@@ -172,9 +167,8 @@ To contribute to this project:
 3. Commit your changes.
 4. Submit a pull request.
 
-
-## Contact
-
-For further questions or support, reach out to the author.
-
 ---
+
+## License
+
+This project is licensed under the **ISC License**.

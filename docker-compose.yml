@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3300:3300"
+    environment:
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      DB_FILENAME: /usr/src/app/data/pms.db
+      PORT: 3300
+      HELMET_CONTENT_SECURITY_POLICY: false
+      HELMET_FRAMEGUARD: false
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      LOG_FILE: app.log
+    volumes:
+      - .:/usr/src/app
+      - ./data:/usr/src/app/data
+    restart: always

@@ -7,7 +7,10 @@
     "start:dev": "NODE_ENV=dev nodemon src/app.ts",
     "build": "tsc",
     "test": "NODE_ENV=test jest --coverage",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "docker:build": "docker build -t trbo-pms .",
+    "docker:run": "docker run -p 3300:3300 --env-file .env trbo-pms",
+    "docker:compose": "docker-compose up --build"
   },
   "keywords": [],
   "author": "",

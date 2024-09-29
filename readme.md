@@ -106,6 +106,93 @@ To switch to PostgreSQL, you could update the `DB_FILENAME` in the `.env` file t
 
 ---
 
+**Project Setup**
+This section explains how to clone the repository and install dependencies.
+
+```markdown
+## Project Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/project-name.git
+   cd project-name
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+
+4. Run the project (for development):
+   ```bash
+   npm run start:dev
+   ```
+```
+
+### 2. **Environment Variables**
+Explain how to set up the environment variables, and mention how they work in the Docker context.
+
+```markdown
+## Environment Variables
+
+Create environment-specific `.env` files to define your configuration:
+
+- `.env`: General development configuration.
+- `.env.prod`: Production-specific configuration.
+  
+**Example** `.env` file:
+```bash
+NODE_ENV=development
+JWT_SECRET=supersecretkey123
+DB_FILENAME=pms.db
+LOG_LEVEL=debug
+PORT=3000
+```
+
+When running the project in Docker, the appropriate environment file will be selected based on the `NODE_ENV` value.
+```
+
+### 3. **Docker Setup**
+Document how to build and run the Docker container, including environment handling.
+
+```markdown
+## Docker Setup
+
+1. Build the Docker image:
+   ```bash
+   docker build --build-arg NODE_ENV=production -t project-name .
+   ```
+
+2. Run the Docker container:
+   ```bash
+   docker run --env-file .env.prod -p 3000:3000 project-name
+   ```
+
+   You can replace `.env.prod` with the appropriate environment file.
+```
+
+### 4. **Running Tests**
+Explain how to run tests inside Docker and locally.
+
+```markdown
+## Running Tests
+
+Run the test suite locally:
+```bash
+npm run test
+```
+
+To run tests inside Docker:
+```bash
+docker build --target test --build-arg NODE_ENV=test -t project-name-test .
+docker run project-name-test
+```
+
 ## Installation and Setup
 
 1. Clone the repository:

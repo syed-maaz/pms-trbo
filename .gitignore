@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.* 
+
+# Typescript output
+dist/
+build/
+
+# Jest coverage and test results
+coverage/
+test-results/
+
+# Optional npm cache directory
+.npm/
+
+# Optional yarn cache directory
+.yarn/
+
+# Test database files
+pms.db
+test_pms.db
+
+# Editor-specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Miscellaneous
+*.lock
+*.tmp
+*.swp
+
+# logs
+logs/
+
+#uploads
+uploads/
